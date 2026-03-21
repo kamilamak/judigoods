@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Judigoods — Checkout Flow Mockup</title>
+<style>
+  :root { --brand:#d4821f; --brand-light:rgba(212,130,31,0.12); --text:#1a1a1a; --muted:#6b7280; --border:#e5e7eb; --bg:#f9f7f4; --card:#ffffff; --radius:12px; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
+  body { background:var(--bg); color:var(--text); }
+
+  .page-label { background:#1e40af; color:white; padding:10px 24px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:12px; }
+  .tab-bar { display:flex; border-bottom:2px solid var(--border); background:white; padding:0 48px; }
+  .tab { padding:14px 20px; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.2s; }
+  .tab.active { color:var(--brand); border-bottom-color:var(--brand); }
+  .tab:hover:not(.active) { color:var(--text); }
+
+  /* PANEL SYSTEM */
+  .panel { display:none; padding:40px 48px; }
+  .panel.active { display:block; }
+
+  /* CART PAGE */
+  .checkout-layout { display:grid; grid-template-columns:1fr 380px; gap:32px; max-width:1100px; margin:0 auto; }
+
+  /* CART TABLE */
+  .cart-card { background:var(--card); border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; }
+  .cart-header { padding:16px 24px; border-bottom:1px solid var(--border); font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:space-between; }
+  .clear-btn { font-size:12px; color:#ef4444; cursor:pointer; font-weight:500; }
+  .cart-item { display:flex; gap:14px; padding:16px 24px; border-bottom:1px solid #f3f4f6; align-items:center; }
+  .item-img { width:72px; height:72px; border-radius:8px; object-fit:cover; background:#f0ece6; flex-shrink:0; }
+  .item-info { flex:1; }
+  .item-cat { font-size:11px; color:var(--muted); }
+  .item-name { font-size:14px; font-weight:500; margin:2px 0 4px; }
+  .item-variant { font-size:12px; color:var(--muted); background:#f3f4f6; padding:2px 8px; border-radius:4px; display:inline-block; }
+  .item-price { font-size:14px; font-weight:700; min-width:80px; text-align:right; }
+  .qty-control { display:flex; align-items:center; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .qty-btn { width:30px; height:30px; border:none; background:transparent; cursor:pointer; font-size:14px; font-weight:700; color:var(--muted); transition:background 0.15s; }
+  .qty-btn:hover { background:#f3f4f6; }
+  .qty-val { padding:0 10px; font-size:13px; font-weight:600; border-left:1px solid var(--border); border-right:1px solid var(--border); height:30px; display:flex; align-items:center; }
+
+  /* ORDER SUMMARY */
+  .summary-card { background:var(--card); border-radius:var(--radius); border:1px solid var(--border); padding:24px; position:sticky; top:20px; }
+  .summary-title { font-size:15px; font-weight:700; margin-bottom:16px; }
+  .summary-row { display:flex; justify-content:space-between; font-size:14px; margin-bottom:10px; }
+  .summary-row.total { font-size:16px; font-weight:800; border-top:2px solid var(--border); padding-top:12px; margin-top:4px; }
+  .promo-row { display:flex; gap:8px; margin:12px 0; }
+  .promo-input { flex:1; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:13px; }
+  .promo-btn { background:#f3f4f6; border:1px solid var(--border); border-radius:8px; padding:10px 16px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; }
+  .shipping-progress { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px; margin:14px 0; }
+  .progress-bar { height:6px; background:#e5e7eb; border-radius:3px; margin-top:6px; overflow:hidden; }
+  .progress-fill { height:100%; background:var(--brand); border-radius:3px; width:68%; }
+  .checkout-btn { width:100%; background:var(--brand); color:white; border:none; border-radius:10px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; margin-top:16px; }
+  .checkout-btn:hover { opacity:0.9; }
+  .secure-note { text-align:center; font-size:11px; color:var(--muted); margin-top:10px; }
+  .payment-icons { display:flex; justify-content:center; gap:8px; margin-top:8px; font-size:12px; }
+
+  /* CHECKOUT FORM */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group.full { grid-column:1/-1; }
+  label { font-size:13px; font-weight:500; }
+  input, select { padding:11px 14px; border:1.5px solid var(--border); border-radius:8px; font-size:14px; outline:none; transition:border 0.15s; }
+  input:focus, select:focus { border-color:var(--brand); }
+  .section-divider { margin:24px 0; font-weight:700; font-size:15px; padding-bottom:10px; border-bottom:2px solid var(--border); }
+  .shipping-options { display:flex; flex-direction:column; gap:10px; margin:12px 0; }
+  .shipping-opt { display:flex; align-items:center; gap:12px; padding:12px 16px; border:1.5px solid var(--border); border-radius:10px; cursor:pointer; transition:border 0.15s; }
+  .shipping-opt.selected { border-color:var(--brand); background:var(--brand-light); }
+  .shipping-opt input[type=radio] { accent-color:var(--brand); }
+  .shipping-name { font-weight:600; font-size:14px; }
+  .shipping-desc { font-size:12px; color:var(--muted); }
+  .shipping-price { margin-left:auto; font-weight:700; font-size:14px; }
+
+  /* SUCCESS */
+  .success-center { max-width:480px; margin:60px auto; text-align:center; }
+  .success-icon { width:96px; height:96px; border-radius:50%; background:#d1fae5; display:flex; align-items:center; justify-content:center; font-size:48px; margin:0 auto 24px; }
+  .success-title { font-family:Georgia,serif; font-size:32px; font-weight:700; margin-bottom:12px; }
+  .success-sub { color:var(--muted); line-height:1.7; margin-bottom:28px; }
+  .steps-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; text-align:left; margin-bottom:24px; }
+  .steps-card h4 { font-size:13px; font-weight:700; margin-bottom:12px; }
+  .step-row { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .step-num { width:24px; height:24px; border-radius:50%; background:var(--brand-light); color:var(--brand); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+  .step-text { font-size:13px; color:var(--muted); }
+  .btn-row { display:flex; flex-direction:column; gap:10px; }
+  .btn-full { width:100%; padding:13px; border-radius:9px; font-size:14px; font-weight:700; cursor:pointer; border:none; }
+  .btn-full.primary { background:var(--brand); color:white; }
+  .btn-full.secondary { background:white; border:1.5px solid var(--border); color:var(--text); }
+</style>
+</head>
+<body>
+
+<div class="page-label">
+  🛒 JUDIGOODS — Checkout Flow Mockup
+  <span style="background:rgba(255,255,255,0.2);padding:2px 10px;border-radius:20px;font-size:11px;">Click tabs to switch between Cart → Checkout → Success</span>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('cart', this)">🛒 Step 1: Cart</div>
+  <div class="tab" onclick="switchTab('checkout', this)">💳 Step 2: Checkout</div>
+  <div class="tab" onclick="switchTab('success', this)">✅ Step 3: Order Success</div>
+</div>
+
+<!-- PANEL: CART -->
+<div id="cart" class="panel active">
+  <div style="max-width:1100px;margin:0 auto 16px;">
+    <h1 style="font-size:26px;font-weight:700;margin-bottom:4px;">Your Shopping Cart</h1>
+    <p style="font-size:14px;color:var(--muted);">3 items in your cart</p>
+  </div>
+  <div class="checkout-layout">
+    <!-- LEFT: ITEMS -->
+    <div>
+      <div class="cart-card">
+        <div class="cart-header">Order Items <span class="clear-btn">Clear cart</span></div>
+        <!-- Item 1 -->
+        <div class="cart-item">
+          <img class="item-img" src="https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=200" alt="Scarf" />
+          <div class="item-info">
+            <div class="item-cat">Scarves & Wraps</div>
+            <div class="item-name">Luxe Silk Scarf – Ivory Bloom</div>
+            <div class="item-variant">Color: Ivory / Blush</div>
+          </div>
+          <div class="qty-control">
+            <button class="qty-btn">−</button>
+            <span class="qty-val">1</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="item-price">$68.00</div>
+          <button style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px;padding:4px 8px;">🗑</button>
+        </div>
+        <!-- Item 2 -->
+        <div class="cart-item">
+          <img class="item-img" src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200" alt="Dress" />
+          <div class="item-info">
+            <div class="item-cat">Clothing</div>
+            <div class="item-name">Linen Maxi Dress – Dusty Rose</div>
+            <div class="item-variant">Size: M</div>
+          </div>
+          <div class="qty-control">
+            <button class="qty-btn">−</button>
+            <span class="qty-val">1</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="item-price">$125.00</div>
+          <button style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px;padding:4px 8px;">🗑</button>
+        </div>
+        <!-- Item 3 -->
+        <div class="cart-item">
+          <img class="item-img" src="https://images.unsplash.com/photo-1602178506595-b4f2b52b8e2b?w=200" alt="Candle" />
+          <div class="item-info">
+            <div class="item-cat">Lifestyle</div>
+            <div class="item-name">Organic Beeswax Candle Set</div>
+            <div class="item-variant">Scent: Lavender & Eucalyptus</div>
+          </div>
+          <div class="qty-control">
+            <button class="qty-btn">−</button>
+            <span class="qty-val">2</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="item-price">$96.00</div>
+          <button style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px;padding:4px 8px;">🗑</button>
+        </div>
+      </div>
+    </div>
+    <!-- RIGHT: SUMMARY -->
+    <div>
+      <div class="summary-card">
+        <div class="summary-title">Order Summary</div>
+        <div class="summary-row"><span>Subtotal (4 items)</span><span>$289.00</span></div>
+        <div class="summary-row"><span>Shipping</span><span style="color:#16a34a">Free</span></div>
+        <div class="summary-row"><span>Tax (est.)</span><span>$23.12</span></div>
+        <div class="promo-row">
+          <input class="promo-input" placeholder="Promo code (e.g. WELCOME15)" />
+          <button class="promo-btn">Apply</button>
+        </div>
+        <div class="shipping-progress">
+          <div style="font-size:12px;font-weight:600;color:#16a34a">🎉 You qualify for free shipping!</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+        </div>
+        <div class="summary-row total"><span>Total</span><span>$312.12</span></div>
+        <button class="checkout-btn" onclick="switchTab('checkout', document.querySelectorAll('.tab')[1])">
+          Proceed to Checkout →
+        </button>
+        <div class="secure-note">🔒 Secure checkout powered by Stripe</div>
+        <div class="payment-icons">💳 Visa · Mastercard · Amex · PayPal</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: CHECKOUT FORM -->
+<div id="checkout" class="panel">
+  <div class="checkout-layout">
+    <div>
+      <div class="cart-card" style="padding:28px">
+        <div class="section-divider">📦 Shipping Information</div>
+        <div class="form-grid">
+          <div class="form-group"><label>First Name</label><input value="Jane" /></div>
+          <div class="form-group"><label>Last Name</label><input value="Doe" /></div>
+          <div class="form-group full"><label>Email Address</label><input type="email" value="jane@example.com" /></div>
+          <div class="form-group full"><label>Street Address</label><input value="123 Blossom Lane" /></div>
+          <div class="form-group"><label>City</label><input value="New York" /></div>
+          <div class="form-group"><label>State</label><select><option>New York</option><option>California</option></select></div>
+          <div class="form-group"><label>ZIP Code</label><input value="10001" /></div>
+          <div class="form-group"><label>Country</label><select><option>United States</option><option>Canada</option></select></div>
+          <div class="form-group full"><label>Phone (optional)</label><input type="tel" placeholder="+1 (555) 000-0000" /></div>
+        </div>
+
+        <div class="section-divider" style="margin-top:28px">🚚 Shipping Method</div>
+        <div class="shipping-options">
+          <div class="shipping-opt selected">
+            <input type="radio" name="ship" checked />
+            <div><div class="shipping-name">Standard Shipping</div><div class="shipping-desc">5–7 business days</div></div>
+            <span class="shipping-price">Free</span>
+          </div>
+          <div class="shipping-opt">
+            <input type="radio" name="ship" />
+            <div><div class="shipping-name">Express Shipping</div><div class="shipping-desc">2–3 business days</div></div>
+            <span class="shipping-price">$12.00</span>
+          </div>
+        </div>
+
+        <div class="section-divider" style="margin-top:28px">💳 Payment</div>
+        <div style="background:#fafafa;border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;color:var(--muted);font-size:14px;">
+          <div style="font-size:28px;margin-bottom:8px;">🔒</div>
+          <strong>Stripe Secure Payment Form</strong><br>
+          In production, Stripe's hosted payment form will appear here.<br>
+          All card data is handled by Stripe — never touches your server.
+        </div>
+
+        <button class="checkout-btn" style="margin-top:20px" onclick="switchTab('success', document.querySelectorAll('.tab')[2])">
+          Place Order · $312.12 →
+        </button>
+      </div>
+    </div>
+
+    <!-- MINI SUMMARY SIDEBAR -->
+    <div>
+      <div class="summary-card">
+        <div class="summary-title">Order Review</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px;">3 items · 4 units</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+          <div style="display:flex;gap:10px;align-items:center;">
+            <img src="https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=100" style="width:44px;height:44px;border-radius:6px;object-fit:cover;" alt="" />
+            <div style="flex:1;font-size:13px;">Luxe Silk Scarf</div>
+            <span style="font-size:13px;font-weight:600">$68</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100" style="width:44px;height:44px;border-radius:6px;object-fit:cover;" alt="" />
+            <div style="flex:1;font-size:13px;">Linen Maxi Dress</div>
+            <span style="font-size:13px;font-weight:600">$125</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <img src="https://images.unsplash.com/photo-1602178506595-b4f2b52b8e2b?w=100" style="width:44px;height:44px;border-radius:6px;object-fit:cover;" alt="" />
+            <div style="flex:1;font-size:13px;">Beeswax Candle Set ×2</div>
+            <span style="font-size:13px;font-weight:600">$96</span>
+          </div>
+        </div>
+        <div class="summary-row"><span>Subtotal</span><span>$289.00</span></div>
+        <div class="summary-row"><span>Shipping</span><span style="color:#16a34a">Free</span></div>
+        <div class="summary-row"><span>Tax</span><span>$23.12</span></div>
+        <div class="summary-row total"><span>Total</span><span>$312.12</span></div>
+        <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px;">🔒 SSL encrypted · Stripe secure</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: SUCCESS -->
+<div id="success" class="panel">
+  <div class="success-center">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Order Confirmed! 🎉</div>
+    <div class="success-sub">Thank you for your order! We've received your payment and are preparing your items with care. You'll receive a confirmation email at <strong>jane@example.com</strong> shortly.</div>
+
+    <div class="steps-card">
+      <h4>What happens next?</h4>
+      <div class="step-row"><div class="step-num">1</div><div class="step-text">Order confirmation email sent to your inbox</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-text">We carefully package your items within 1-2 days</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-text">Your order ships within 2-3 business days</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-text">Track your delivery via the link in your email</div></div>
+    </div>
+
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;">
+      <strong>Order Reference:</strong> <span style="font-family:monospace;color:#059669">#JG-2025-4821</span>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-full primary">📦 View My Orders</button>
+      <button class="btn-full secondary">Continue Shopping →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(panelId, tabEl) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(panelId).classList.add('active');
+  tabEl.classList.add('active');
+}
+</script>
+
+</body>
+</html>

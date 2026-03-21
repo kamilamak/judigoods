@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Judigoods — Product Page Mockup</title>
+<style>
+  :root { --brand:#d4821f; --brand-light:rgba(212,130,31,0.1); --text:#1a1a1a; --muted:#6b7280; --border:#e5e7eb; --bg:#fdfaf7; --card:#ffffff; --radius:12px; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
+  body { background:var(--bg); color:var(--text); }
+  .page-label { background:#1e40af; color:white; padding:10px 24px; font-size:13px; font-weight:600; }
+  nav { display:flex; align-items:center; justify-content:space-between; padding:0 48px; height:60px; border-bottom:1px solid var(--border); background:white; }
+  .logo { font-family:Georgia,serif; font-size:22px; font-weight:700; color:var(--brand); }
+  .breadcrumb { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); padding:16px 48px 0; }
+  .breadcrumb span { color:var(--text); font-weight:500; }
+  .breadcrumb-sep { color:#ccc; }
+
+  /* PRODUCT LAYOUT */
+  .product-layout { display:grid; grid-template-columns:1fr 1fr; gap:52px; padding:28px 48px 48px; max-width:1200px; margin:0 auto; align-items:start; }
+
+  /* GALLERY */
+  .gallery { display:flex; gap:12px; }
+  .thumbs { display:flex; flex-direction:column; gap:8px; }
+  .thumb { width:72px; height:72px; border-radius:8px; overflow:hidden; cursor:pointer; border:2px solid transparent; transition:border 0.15s; }
+  .thumb.active { border-color:var(--brand); }
+  .thumb img { width:100%; height:100%; object-fit:cover; }
+  .main-img { flex:1; aspect-ratio:4/5; border-radius:16px; overflow:hidden; background:#f0ece6; position:relative; }
+  .main-img img { width:100%; height:100%; object-fit:cover; }
+  .img-badge { position:absolute; top:12px; left:12px; background:#ef4444; color:white; border-radius:99px; padding:4px 12px; font-size:12px; font-weight:700; }
+  .img-zoom { position:absolute; top:12px; right:12px; width:36px; height:36px; background:rgba(255,255,255,0.9); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:16px; }
+
+  /* PRODUCT INFO */
+  .product-info { }
+  .info-cat { font-size:13px; color:var(--brand); font-weight:600; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:8px; }
+  .info-name { font-family:Georgia,serif; font-size:32px; font-weight:700; line-height:1.15; margin-bottom:14px; }
+  .rating-row { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .stars { color:#f59e0b; font-size:16px; }
+  .rating-text { font-size:14px; color:var(--muted); }
+  .rating-link { font-size:13px; color:var(--brand); cursor:pointer; }
+  .price-block { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+  .price-main { font-size:32px; font-weight:800; color:#ef4444; }
+  .price-compare { font-size:20px; color:var(--muted); text-decoration:line-through; }
+  .discount-badge { background:#fee2e2; color:#dc2626; border-radius:8px; padding:4px 10px; font-size:13px; font-weight:700; }
+  .divider { height:1px; background:var(--border); margin:20px 0; }
+
+  /* VARIANTS */
+  .variant-label { font-size:13px; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+  .color-options { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .color-dot { width:32px; height:32px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:all 0.15s; display:flex; align-items:center; justify-content:center; position:relative; }
+  .color-dot.active { border-color:var(--brand); box-shadow:0 0 0 3px rgba(212,130,31,0.2); }
+  .color-dot span { position:absolute; bottom:-22px; white-space:nowrap; font-size:10px; color:var(--muted); left:50%; transform:translateX(-50%); }
+  .size-options { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .size-btn { padding:8px 16px; border-radius:8px; border:1.5px solid var(--border); font-size:13px; font-weight:500; cursor:pointer; transition:all 0.15s; }
+  .size-btn:hover { border-color:var(--brand); color:var(--brand); }
+  .size-btn.active { background:var(--brand); color:white; border-color:var(--brand); }
+  .size-btn.out { opacity:0.4; cursor:not-allowed; text-decoration:line-through; }
+
+  /* ADD TO CART */
+  .qty-add { display:flex; gap:12px; align-items:center; margin-bottom:14px; }
+  .qty-input { display:flex; align-items:center; border:1.5px solid var(--border); border-radius:10px; overflow:hidden; }
+  .qty-btn2 { width:40px; height:48px; border:none; background:#f9f7f4; cursor:pointer; font-size:18px; font-weight:600; color:var(--muted); transition:background 0.15s; }
+  .qty-btn2:hover { background:#f0ece6; }
+  .qty-num { width:44px; height:48px; border:none; text-align:center; font-size:15px; font-weight:700; }
+  .add-btn { flex:1; background:var(--brand); color:white; border:none; border-radius:10px; height:48px; font-size:15px; font-weight:700; cursor:pointer; transition:background 0.2s; }
+  .add-btn:hover { background:#b86616; }
+  .wishlist-btn { width:48px; height:48px; border:1.5px solid var(--border); background:white; border-radius:10px; font-size:20px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+  .wishlist-btn:hover { border-color:#ef4444; }
+
+  /* PERKS */
+  .perks { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+  .perk { display:flex; gap:8px; align-items:flex-start; font-size:12px; }
+  .perk-icon { width:28px; height:28px; background:var(--brand-light); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+  .perk-text strong { display:block; font-size:12px; font-weight:600; }
+  .perk-text span { color:var(--muted); }
+
+  /* ACCORDION */
+  .accordion { border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:16px; }
+  .accordion-item { border-bottom:1px solid var(--border); }
+  .accordion-item:last-child { border:none; }
+  .accordion-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; font-size:14px; font-weight:600; }
+  .accordion-header:hover { background:#fafafa; }
+  .accordion-body { padding:0 16px 14px; font-size:13px; color:var(--muted); line-height:1.7; display:none; }
+  .accordion-body.open { display:block; }
+
+  /* REVIEWS */
+  .reviews-section { padding:40px 48px; max-width:1200px; margin:0 auto; }
+  .review-summary { display:flex; align-items:center; gap:40px; margin-bottom:32px; background:white; border:1px solid var(--border); border-radius:var(--radius); padding:28px; }
+  .big-rating { text-align:center; }
+  .big-num { font-size:56px; font-weight:800; line-height:1; color:var(--brand); }
+  .big-stars { font-size:24px; color:#f59e0b; margin:4px 0; }
+  .big-count { font-size:13px; color:var(--muted); }
+  .rating-bars { flex:1; }
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .bar-label { font-size:12px; min-width:36px; text-align:right; }
+  .bar-track { flex:1; height:8px; background:#f3f4f6; border-radius:4px; overflow:hidden; }
+  .bar-fill { height:100%; background:#f59e0b; border-radius:4px; }
+  .write-review-btn { background:var(--brand); color:white; border:none; border-radius:9px; padding:11px 22px; font-size:14px; font-weight:600; cursor:pointer; }
+  .review-list { display:flex; flex-direction:column; gap:16px; }
+  .review-card { background:white; border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
+  .review-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .reviewer-avatar { width:40px; height:40px; border-radius:50%; background:var(--brand-light); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:var(--brand); }
+  .reviewer-name { font-weight:600; font-size:14px; }
+  .verified { font-size:11px; color:#16a34a; font-weight:500; }
+  .review-date { font-size:12px; color:var(--muted); margin-left:auto; }
+  .review-stars { color:#f59e0b; font-size:14px; margin-bottom:8px; }
+  .review-title { font-weight:600; font-size:14px; margin-bottom:6px; }
+  .review-body { font-size:13px; color:var(--muted); line-height:1.7; }
+</style>
+</head>
+<body>
+
+<div class="page-label">🛍️ JUDIGOODS — Product Detail Page Mockup</div>
+
+<nav>
+  <div class="logo">Judigoods</div>
+  <div style="display:flex;gap:24px;font-size:14px;color:#555;">
+    <a href="#" style="text-decoration:none;color:inherit">Shop All</a>
+    <a href="#" style="text-decoration:none;color:var(--brand)">Scarves & Wraps</a>
+    <a href="#" style="text-decoration:none;color:inherit">New Arrivals</a>
+  </div>
+  <div style="display:flex;gap:8px;font-size:20px;">🔍 👤 <strong>🛍️ 3</strong></div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="#" style="color:inherit;text-decoration:none;">Home</a> <span class="breadcrumb-sep">›</span>
+  <a href="#" style="color:inherit;text-decoration:none;">Scarves & Wraps</a> <span class="breadcrumb-sep">›</span>
+  <span>Luxe Silk Scarf – Ivory Bloom</span>
+</div>
+
+<!-- PRODUCT SECTION -->
+<div class="product-layout">
+
+  <!-- GALLERY -->
+  <div class="gallery">
+    <div class="thumbs">
+      <div class="thumb active"><img src="https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=200" alt="main" /></div>
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=200" alt="alt1" /></div>
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200" alt="alt2" /></div>
+      <div class="thumb"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200" alt="alt3" /></div>
+    </div>
+    <div class="main-img">
+      <img src="https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=700" alt="Luxe Silk Scarf" />
+      <div class="img-badge">SALE -20%</div>
+      <div class="img-zoom">🔍</div>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="product-info">
+    <div class="info-cat">Scarves & Wraps</div>
+    <h1 class="info-name">Luxe Silk Scarf<br>Ivory Bloom</h1>
+
+    <div class="rating-row">
+      <span class="stars">★★★★★</span>
+      <span class="rating-text">4.9 out of 5</span>
+      <a class="rating-link" href="#reviews">(24 reviews)</a>
+    </div>
+
+    <div class="price-block">
+      <span class="price-main">$68.00</span>
+      <span class="price-compare">$85.00</span>
+      <span class="discount-badge">Save $17</span>
+    </div>
+
+    <p style="font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:18px;">
+      Wrap yourself in pure elegance with this hand-painted silk scarf. Features a delicate floral bloom pattern in soft ivory and blush tones. 100% mulberry silk, 90×90cm. Perfect for any occasion — drape it over your shoulders, tie it as a headscarf, or accent your handbag.
+    </p>
+
+    <div class="divider"></div>
+
+    <!-- COLOR SELECTOR -->
+    <div>
+      <div class="variant-label">Color: <span style="font-weight:400;color:var(--muted)">Ivory / Blush</span></div>
+      <div class="color-options">
+        <div class="color-dot active" style="background:#f5f0e8;border-color:var(--brand)"><span>Ivory / Blush</span></div>
+        <div class="color-dot" style="background:#1a237e"><span>Midnight Blue</span></div>
+        <div class="color-dot" style="background:#c4a882"><span>Desert Sand</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:26px;">
+      <div class="variant-label">Size: <span style="font-weight:400;color:var(--muted)">90×90cm</span></div>
+      <div class="size-options">
+        <div class="size-btn active">90×90cm</div>
+        <div class="size-btn">180×90cm</div>
+        <div class="size-btn out">70×70cm</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ADD TO CART -->
+    <div class="qty-add">
+      <div class="qty-input">
+        <button class="qty-btn2">−</button>
+        <input class="qty-num" type="number" value="1" min="1" />
+        <button class="qty-btn2">+</button>
+      </div>
+      <button class="add-btn">🛍️ Add to Cart</button>
+      <button class="wishlist-btn">♡</button>
+    </div>
+
+    <div style="background:#d1fae5;border-radius:8px;padding:10px 14px;font-size:13px;color:#065f46;font-weight:500;margin-bottom:16px;">
+      ✅ In stock — ships within 2–3 business days
+    </div>
+
+    <!-- PERKS -->
+    <div class="perks">
+      <div class="perk"><div class="perk-icon">🚚</div><div class="perk-text"><strong>Free Shipping</strong><span>Orders over $75</span></div></div>
+      <div class="perk"><div class="perk-icon">🔄</div><div class="perk-text"><strong>Free Returns</strong><span>Within 30 days</span></div></div>
+      <div class="perk"><div class="perk-icon">🌿</div><div class="perk-text"><strong>Ethically Made</strong><span>100% mulberry silk</span></div></div>
+      <div class="perk"><div class="perk-icon">🎁</div><div class="perk-text"><strong>Gift Ready</strong><span>Includes gift box</span></div></div>
+    </div>
+
+    <!-- ACCORDION -->
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggle(this)">📋 Product Details <span>+</span></div>
+        <div class="accordion-body open">
+          Material: 100% Mulberry Silk · Size: 90×90cm · Weight: 14mm · Care: Dry clean or hand wash cold · Imported
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggle(this)">🚚 Shipping & Returns <span>+</span></div>
+        <div class="accordion-body">
+          Standard (5-7 days): Free over $75 · Express (2-3 days): $12 · Returns accepted within 30 days.
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggle(this)">🌿 Sustainability <span>+</span></div>
+        <div class="accordion-body">
+          Sourced from certified ethical silk farms. Packaging is 100% plastic-free and recyclable.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS SECTION -->
+<div class="reviews-section" id="reviews">
+  <h2 style="font-family:Georgia,serif;font-size:28px;font-weight:700;margin-bottom:24px;">Customer Reviews</h2>
+
+  <div class="review-summary">
+    <div class="big-rating">
+      <div class="big-num">4.9</div>
+      <div class="big-stars">★★★★★</div>
+      <div class="big-count">24 reviews</div>
+    </div>
+    <div class="rating-bars">
+      <div class="bar-row"><span class="bar-label">5 ★</span><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div><span style="font-size:12px;color:var(--muted);min-width:24px">21</span></div>
+      <div class="bar-row"><span class="bar-label">4 ★</span><div class="bar-track"><div class="bar-fill" style="width:12%;background:#fbbf24"></div></div><span style="font-size:12px;color:var(--muted);min-width:24px">3</span></div>
+      <div class="bar-row"><span class="bar-label">3 ★</span><div class="bar-track"><div class="bar-fill" style="width:4%;background:#d97706"></div></div><span style="font-size:12px;color:var(--muted);min-width:24px">0</span></div>
+      <div class="bar-row"><span class="bar-label">2 ★</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:#ef4444"></div></div><span style="font-size:12px;color:var(--muted);min-width:24px">0</span></div>
+      <div class="bar-row"><span class="bar-label">1 ★</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:#ef4444"></div></div><span style="font-size:12px;color:var(--muted);min-width:24px">0</span></div>
+    </div>
+    <button class="write-review-btn">✍️ Write a Review</button>
+  </div>
+
+  <div class="review-list">
+    <div class="review-card">
+      <div class="review-header">
+        <div class="reviewer-avatar">S</div>
+        <div>
+          <div class="reviewer-name">Sarah J. <span class="verified">✓ Verified Purchase</span></div>
+        </div>
+        <div class="review-date">March 15, 2026</div>
+      </div>
+      <div class="review-stars">★★★★★</div>
+      <div class="review-title">Absolutely stunning!</div>
+      <div class="review-body">This scarf is even more beautiful in person. The silk is so soft and the print is gorgeous. I've received so many compliments. Will definitely be ordering more!</div>
+    </div>
+    <div class="review-card">
+      <div class="review-header">
+        <div class="reviewer-avatar">A</div>
+        <div>
+          <div class="reviewer-name">Amira H. <span class="verified">✓ Verified Purchase</span></div>
+        </div>
+        <div class="review-date">March 8, 2026</div>
+      </div>
+      <div class="review-stars">★★★★★</div>
+      <div class="review-title">Perfect gift, arrived beautifully packaged</div>
+      <div class="review-body">Bought this as a gift and it was received with so much joy. The packaging is elegant and the scarf itself is exquisite. Fast shipping too.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggle(el) {
+  const body = el.nextElementSibling;
+  const span = el.querySelector('span');
+  body.classList.toggle('open');
+  span.textContent = body.classList.contains('open') ? '−' : '+';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Judigoods — Admin Dashboard Mockup</title>
+<style>
+  :root {
+    --brand: #d4821f; --brand-light: rgba(212,130,31,0.12);
+    --text: #1a1a1a; --muted: #6b7280; --border: #e5e7eb;
+    --bg: #f3f4f6; --card: #ffffff; --sidebar-bg: #1e1f2e;
+    --sidebar-text: #c4c9d4; --sidebar-active: rgba(212,130,31,0.18);
+    --radius: 10px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
+  body { background: var(--bg); color: var(--text); display: flex; }
+
+  /* SIDEBAR */
+  aside { width: 240px; min-height: 100vh; background: var(--sidebar-bg); display: flex; flex-direction: column; flex-shrink: 0; }
+  .sidebar-logo { padding: 24px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .sidebar-logo .logo-text { font-family: Georgia,serif; color: var(--brand); font-size: 20px; font-weight: 700; }
+  .sidebar-logo .logo-sub { color: rgba(255,255,255,0.3); font-size: 11px; margin-top: 2px; }
+  nav.sidebar-nav { flex: 1; padding: 16px 12px; }
+  .nav-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.15em; padding: 8px 8px 4px; margin-top: 8px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 13px; color: var(--sidebar-text); cursor: pointer; transition: all 0.15s; margin-bottom: 2px; }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: white; }
+  .nav-item.active { background: var(--sidebar-active); color: var(--brand); font-weight: 600; }
+  .nav-item .icon { width: 16px; text-align: center; font-size: 15px; }
+  .nav-badge { margin-left: auto; background: #ef4444; color: white; border-radius: 99px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+  .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .back-store { font-size: 12px; color: rgba(255,255,255,0.35); display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 8px; border-radius: 6px; }
+  .back-store:hover { color: rgba(255,255,255,0.65); }
+
+  /* MAIN */
+  main { flex: 1; padding: 28px 32px; overflow-y: auto; min-height: 100vh; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .page-title { font-size: 22px; font-weight: 700; }
+  .page-sub { color: var(--muted); font-size: 14px; margin-top: 3px; }
+  .topbar-actions { display: flex; gap: 10px; align-items: center; }
+  .search-bar { display: flex; align-items: center; gap: 8px; background: white; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 13px; color: var(--muted); width: 220px; }
+  .admin-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--brand); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+
+  /* STAT CARDS */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; }
+  .stat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .stat-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .stat-value { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+  .stat-trend { font-size: 12px; color: #16a34a; }
+  .stat-trend.down { color: #ef4444; }
+
+  /* TWO COLUMN GRID */
+  .two-col { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px; }
+
+  /* TABLE CARD */
+  .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .card-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .card-action { font-size: 12px; color: var(--brand); cursor: pointer; font-weight: 500; }
+  .card-action:hover { text-decoration: underline; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: #f9fafb; border-bottom: 1px solid var(--border); }
+  th { padding: 10px 16px; text-align: left; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  td { padding: 13px 16px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+  tr:last-child td { border: none; }
+  tr:hover td { background: #fafafa; }
+  .status-badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+  .status-pending    { background: #fef3c7; color: #d97706; }
+  .status-confirmed  { background: #dbeafe; color: #2563eb; }
+  .status-shipped    { background: #ede9fe; color: #7c3aed; }
+  .status-delivered  { background: #d1fae5; color: #059669; }
+  .status-cancelled  { background: #fee2e2; color: #dc2626; }
+  .order-id { font-weight: 700; color: var(--brand); font-family: monospace; font-size: 12px; }
+  .customer-name { font-weight: 500; }
+  .customer-email { color: var(--muted); font-size: 12px; }
+  .product-thumb { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; background: #f0ece6; }
+
+  /* LOW STOCK */
+  .stock-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid #f3f4f6; }
+  .stock-item:last-child { border: none; }
+  .stock-name { font-size: 13px; font-weight: 500; }
+  .stock-sku { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .stock-badge-low { background: #fff7ed; color: #ea580c; border-radius: 99px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+  .stock-badge-out { background: #fee2e2; color: #dc2626; border-radius: 99px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+
+  /* QUICK ACTIONS */
+  .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .action-card { background: var(--card); border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 20px; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .action-card:hover { border-color: var(--brand); background: var(--brand-light); }
+  .action-icon { font-size: 28px; margin-bottom: 8px; }
+  .action-label { font-size: 13px; font-weight: 600; }
+  .action-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="sidebar-logo">
+    <div class="logo-text">Judigoods</div>
+    <div class="logo-sub">Admin Panel</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Main</div>
+    <div class="nav-item active"><span class="icon">📊</span> Dashboard</div>
+    <div class="nav-item"><span class="icon">📦</span> Products</div>
+    <div class="nav-item"><span class="icon">🛒</span> Orders <span class="nav-badge">5</span></div>
+    <div class="nav-item"><span class="icon">👥</span> Customers</div>
+
+    <div class="nav-label">Store</div>
+    <div class="nav-item"><span class="icon">🏷️</span> Categories</div>
+    <div class="nav-item"><span class="icon">🎫</span> Discount Codes</div>
+    <div class="nav-item"><span class="icon">⭐</span> Reviews</div>
+
+    <div class="nav-label">Reports</div>
+    <div class="nav-item"><span class="icon">📈</span> Analytics</div>
+    <div class="nav-item"><span class="icon">📋</span> Inventory</div>
+
+    <div class="nav-label">System</div>
+    <div class="nav-item"><span class="icon">⚙️</span> Settings</div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="back-store">← Back to Store</div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">Welcome back, Admin! Here's what's happening today.</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="search-bar">🔍 Search anything…</div>
+      <button style="background:var(--brand);color:white;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;">+ New Product</button>
+      <div class="admin-avatar">A</div>
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-icon" style="background:#d1fae5">💵</div>
+      </div>
+      <div class="stat-value">$24,892</div>
+      <div class="stat-trend">↑ 12.4% from last month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Total Orders</div>
+        <div class="stat-icon" style="background:#dbeafe">🛒</div>
+      </div>
+      <div class="stat-value">184</div>
+      <div class="stat-trend">↑ 8.2% from last month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Products</div>
+        <div class="stat-icon" style="background:#ede9fe">📦</div>
+      </div>
+      <div class="stat-value">47</div>
+      <div class="stat-trend">3 added this week</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Customers</div>
+        <div class="stat-icon" style="background:#fef3c7">👤</div>
+      </div>
+      <div class="stat-value">312</div>
+      <div class="stat-trend">↑ 5.1% from last month</div>
+    </div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="quick-actions">
+    <div class="action-card">
+      <div class="action-icon">📸</div>
+      <div class="action-label">Add New Product</div>
+      <div class="action-sub">Upload images, set price, publish</div>
+    </div>
+    <div class="action-card">
+      <div class="action-icon">📦</div>
+      <div class="action-label">Update Inventory</div>
+      <div class="action-sub">Adjust stock levels in bulk</div>
+    </div>
+  </div>
+
+  <!-- ORDERS + LOW STOCK -->
+  <div class="two-col">
+
+    <!-- RECENT ORDERS TABLE -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔥 Recent Orders</div>
+        <span class="card-action">View all orders →</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Status</th>
+            <th style="text-align:right">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="order-id">#JG-2024</div><div style="font-size:11px;color:#9ca3af">2 hrs ago</div></td>
+            <td><div class="customer-name">Sarah Johnson</div><div class="customer-email">sarah@email.com</div></td>
+            <td>3</td>
+            <td><span class="status-badge status-confirmed">Confirmed</span></td>
+            <td style="text-align:right;font-weight:700">$246.00</td>
+          </tr>
+          <tr>
+            <td><div class="order-id">#JG-2023</div><div style="font-size:11px;color:#9ca3af">5 hrs ago</div></td>
+            <td><div class="customer-name">Amira Hassan</div><div class="customer-email">amira@email.com</div></td>
+            <td>1</td>
+            <td><span class="status-badge status-shipped">Shipped</span></td>
+            <td style="text-align:right;font-weight:700">$95.00</td>
+          </tr>
+          <tr>
+            <td><div class="order-id">#JG-2022</div><div style="font-size:11px;color:#9ca3af">Yesterday</div></td>
+            <td><div class="customer-name">Maria Gonzalez</div><div class="customer-email">maria@email.com</div></td>
+            <td>4</td>
+            <td><span class="status-badge status-delivered">Delivered</span></td>
+            <td style="text-align:right;font-weight:700">$388.00</td>
+          </tr>
+          <tr>
+            <td><div class="order-id">#JG-2021</div><div style="font-size:11px;color:#9ca3af">Yesterday</div></td>
+            <td><div class="customer-name">Emily Chen</div><div class="customer-email">emily@email.com</div></td>
+            <td>2</td>
+            <td><span class="status-badge status-pending">Pending</span></td>
+            <td style="text-align:right;font-weight:700">$143.00</td>
+          </tr>
+          <tr>
+            <td><div class="order-id">#JG-2020</div><div style="font-size:11px;color:#9ca3af">2 days ago</div></td>
+            <td><div class="customer-name">Fatima Al-Rashid</div><div class="customer-email">fatima@email.com</div></td>
+            <td>5</td>
+            <td><span class="status-badge status-cancelled">Cancelled</span></td>
+            <td style="text-align:right;font-weight:700">$512.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- LOW STOCK ALERTS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚠️ Low Stock Alert</div>
+        <span class="card-action">Manage →</span>
+      </div>
+      <div class="stock-item">
+        <div><div class="stock-name">Handcrafted Leather Tote</div><div class="stock-sku">SKU: ACC-002</div></div>
+        <span class="stock-badge-low">3 left</span>
+      </div>
+      <div class="stock-item">
+        <div><div class="stock-name">Moroccan Hand-Woven Throw</div><div class="stock-sku">SKU: HOM-001</div></div>
+        <span class="stock-badge-low">4 left</span>
+      </div>
+      <div class="stock-item">
+        <div><div class="stock-name">Cashmere Wrap – Terracotta</div><div class="stock-sku">SKU: SCF-002</div></div>
+        <span class="stock-badge-out">Out of stock</span>
+      </div>
+      <div class="stock-item">
+        <div><div class="stock-name">Linen Blazer – XL/XXL</div><div class="stock-sku">SKU: CLO-002</div></div>
+        <span class="stock-badge-low">2 left</span>
+      </div>
+      <div style="padding:16px 20px;text-align:center;">
+        <button style="background:var(--brand);color:white;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;width:100%;">Update Stock Levels</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NOTE -->
+  <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px 20px;font-size:13px;color:#1d4ed8;">
+    <strong>📌 Developer Note:</strong> This is the Admin Dashboard layout mockup. The actual admin panel is found at <code>/app/admin/page.tsx</code> and uses live Prisma data. Protect admin routes using the session role check in <code>/app/admin/layout.tsx</code>.
+  </div>
+</main>
+
+</body>
+</html>

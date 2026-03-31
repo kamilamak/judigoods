@@ -45,7 +45,7 @@ export default function ProductCard({
   }
 
   return (
-    <Link href={`/products/${slug}`} className="product-card">
+    <Link href={`/products/${slug}`} className="product-card group">
       {/* Image container — tall portrait like Vela */}
       <div className="relative aspect-[3/4] overflow-hidden bg-[#ece8e2]">
         <Image

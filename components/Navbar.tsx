@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
 import { useCart } from '@/hooks/useCart'
 import { Search, User, ShoppingBag, Heart, Menu, X, ChevronDown } from 'lucide-react'
@@ -59,9 +60,14 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 mr-4">
-            <span className="text-xl font-bold tracking-widest uppercase text-foreground">
-              Judigoods
-            </span>
+            <Image
+              src="/images/logo.png"
+              alt="Judigoods"
+              width={200}
+              height={40}
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop Nav Links */}

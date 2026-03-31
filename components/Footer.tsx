@@ -1,143 +1,112 @@
 import Link from 'next/link'
-import { Instagram, Facebook, Twitter, Youtube, Mail, Phone, MapPin } from 'lucide-react'
-
-const SHOP_LINKS = [
-  { label: 'All Products', href: '/products' },
-  { label: 'New Arrivals', href: '/products?tag=new-arrival' },
-  { label: 'Sale Items', href: '/products?sale=true' },
-  { label: 'Scarves & Wraps', href: '/products?category=scarves-wraps' },
-  { label: 'Home & Decor', href: '/products?category=home-decor' },
-]
-
-const HELP_LINKS = [
-  { label: 'Shipping Info', href: '/shipping' },
-  { label: 'Returns & Exchanges', href: '/returns' },
-  { label: 'Size Guide', href: '/size-guide' },
-  { label: 'FAQ', href: '/faq' },
-  { label: 'Contact Us', href: '/contact' },
-]
-
-const COMPANY_LINKS = [
-  { label: 'About Us', href: '/about' },
-  { label: 'Our Story', href: '/about#story' },
-  { label: 'Sustainability', href: '/sustainability' },
-  { label: 'Careers', href: '/careers' },
-  { label: 'Press', href: '/press' },
-]
+import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="bg-brand-950 text-white">
-      {/* Main Footer */}
-      <div className="container-custom py-16">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
-          {/* Brand */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="font-display text-2xl font-bold text-white mb-4 block">
-              Judigoods
-            </Link>
-            <p className="text-brand-300 text-sm leading-relaxed mb-6 max-w-xs">
-              Curated clothing, handmade scarves, artisan home décor, and lifestyle goods — ethically sourced, beautifully made.
-            </p>
-            {/* Social Links */}
-            <div className="flex items-center gap-3">
-              {[
-                { Icon: Instagram, href: '#', label: 'Instagram' },
-                { Icon: Facebook, href: '#', label: 'Facebook' },
-                { Icon: Twitter, href: '#', label: 'Twitter' },
-                { Icon: Youtube, href: '#', label: 'YouTube' },
-              ].map(({ Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-brand-300 hover:bg-brand-600 hover:text-white transition-all"
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
+    <footer className="bg-[#1a1a1a] text-white/70">
+      <div className="container-custom py-14 grid grid-cols-2 md:grid-cols-4 gap-10">
+        {/* Brand */}
+        <div className="col-span-2 md:col-span-1">
+          <Link href="/" className="text-lg font-semibold tracking-widest uppercase text-white block mb-4">
+            Judigoods
+          </Link>
+          <p className="text-xs leading-relaxed mb-6 max-w-xs text-white/50">
+            Curated clothing, handmade accessories, artisan home décor, and lifestyle goods — ethically sourced, beautifully made.
+          </p>
+          <div className="flex items-center gap-3">
+            {[
+              { Icon: Instagram, href: '#', label: 'Instagram' },
+              { Icon: Facebook, href: '#', label: 'Facebook' },
+              { Icon: Twitter, href: '#', label: 'Twitter' },
+              { Icon: Youtube, href: '#', label: 'YouTube' },
+            ].map(({ Icon, href, label }) => (
+              <a key={label} href={href} aria-label={label}
+                className="h-8 w-8 flex items-center justify-center border border-white/20 text-white/50 hover:text-white hover:border-white transition-colors">
+                <Icon className="h-3.5 w-3.5" />
+              </a>
+            ))}
           </div>
+        </div>
 
-          {/* Shop */}
-          <div>
-            <h4 className="text-sm font-semibold uppercase tracking-widest text-brand-400 mb-4">Shop</h4>
-            <ul className="space-y-2.5">
-              {SHOP_LINKS.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-brand-300 hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* Shop */}
+        <div>
+          <h4 className="text-[10px] font-semibold tracking-widest uppercase text-white mb-5">Shop</h4>
+          <ul className="space-y-3">
+            {[
+              ['All Products', '/products'],
+              ['New Arrivals', '/products?tag=new-arrival'],
+              ['Sale', '/products?sale=true'],
+              ['Clothing', '/products?category=clothing'],
+              ['Accessories', '/products?category=accessories'],
+            ].map(([label, href]) => (
+              <li key={label}>
+                <Link href={href} className="text-xs text-white/50 hover:text-white transition-colors tracking-wide">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          {/* Help */}
-          <div>
-            <h4 className="text-sm font-semibold uppercase tracking-widest text-brand-400 mb-4">Help</h4>
-            <ul className="space-y-2.5">
-              {HELP_LINKS.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-brand-300 hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* Help */}
+        <div>
+          <h4 className="text-[10px] font-semibold tracking-widest uppercase text-white mb-5">Help</h4>
+          <ul className="space-y-3">
+            {[
+              ['Shipping Info', '/shipping'],
+              ['Returns & Exchanges', '/returns'],
+              ['FAQ', '/faq'],
+              ['Contact Us', '/contact'],
+              ['Size Guide', '/size-guide'],
+            ].map(([label, href]) => (
+              <li key={label}>
+                <Link href={href} className="text-xs text-white/50 hover:text-white transition-colors tracking-wide">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="text-sm font-semibold uppercase tracking-widest text-brand-400 mb-4">Contact</h4>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2.5">
-                <Mail className="h-4 w-4 text-brand-400 mt-0.5 flex-shrink-0" />
-                <a href="mailto:hello@judigoods.com" className="text-sm text-brand-300 hover:text-white">
-                  hello@judigoods.com
-                </a>
+        {/* Company */}
+        <div>
+          <h4 className="text-[10px] font-semibold tracking-widest uppercase text-white mb-5">Company</h4>
+          <ul className="space-y-3">
+            {[
+              ['Our Story', '/about'],
+              ['Sustainability', '/sustainability'],
+              ['Careers', '/careers'],
+              ['Press', '/press'],
+            ].map(([label, href]) => (
+              <li key={label}>
+                <Link href={href} className="text-xs text-white/50 hover:text-white transition-colors tracking-wide">
+                  {label}
+                </Link>
               </li>
-              <li className="flex items-start gap-2.5">
-                <Phone className="h-4 w-4 text-brand-400 mt-0.5 flex-shrink-0" />
-                <a href="tel:+15551234567" className="text-sm text-brand-300 hover:text-white">
-                  +1 (555) 123-4567
-                </a>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <MapPin className="h-4 w-4 text-brand-400 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-brand-300">
-                  123 Boutique Ave<br />
-                  New York, NY 10001
-                </span>
-              </li>
-            </ul>
+            ))}
+          </ul>
+          <div className="mt-8">
+            <p className="text-[10px] tracking-widest uppercase text-white mb-2">Contact</p>
+            <a href="mailto:hello@judigoods.com" className="text-xs text-white/50 hover:text-white transition-colors block mb-1">
+              hello@judigoods.com
+            </a>
           </div>
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-white/10 py-6">
-        <div className="container-custom flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-brand-400">
+      <div className="border-t border-white/10 py-5">
+        <div className="container-custom flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="text-[10px] tracking-wider text-white/30">
             © {new Date().getFullYear()} Judigoods. All rights reserved.
           </p>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy" className="text-xs text-brand-400 hover:text-white">Privacy Policy</Link>
-            <Link href="/terms" className="text-xs text-brand-400 hover:text-white">Terms of Service</Link>
-            <Link href="/cookies" className="text-xs text-brand-400 hover:text-white">Cookie Policy</Link>
+          <div className="flex items-center gap-5">
+            {['Privacy Policy', 'Terms of Service', 'Cookies'].map(label => (
+              <Link key={label} href="/" className="text-[10px] tracking-wider text-white/30 hover:text-white/60">
+                {label}
+              </Link>
+            ))}
           </div>
-          {/* Payment icons */}
-          <div className="flex items-center gap-2 text-xs text-brand-400">
-            <span>Secure payments via</span>
-            <span className="font-semibold text-white">Stripe</span>
-            <span>· Visa · Mastercard · Amex · PayPal</span>
-          </div>
+          <p className="text-[10px] tracking-wider text-white/30">Secure checkout via Stripe</p>
         </div>
       </div>
     </footer>

@@ -1,9 +1,8 @@
 import { Suspense } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import ProductCard from '@/components/ProductCard'
-import { SlidersHorizontal, ChevronDown } from 'lucide-react'
+import { SlidersHorizontal } from 'lucide-react'
 
 interface Props {
   searchParams: {
@@ -13,28 +12,24 @@ interface Props {
     featured?: string
     search?: string
     sort?: string
-    minPrice?: string
-    maxPrice?: string
     page?: string
   }
 }
 
 async function getProducts(searchParams: Props['searchParams']) {
   const page     = parseInt(searchParams.page ?? '1')
-  const limit    = 12
+  const limit    = 16
   const category = searchParams.category
-  const tag      = searchParams.tag
   const sale     = searchParams.sale === 'true'
   const featured = searchParams.featured === 'true'
+  const tag      = searchParams.tag
   const search   = searchParams.search
   const sort     = searchParams.sort ?? 'createdAt_desc'
-  const minPrice = parseFloat(searchParams.minPrice ?? '0')
-  const maxPrice = parseFloat(searchParams.maxPrice ?? '9999')
 
   const [sortField, sortDir] = sort.split('_')
   const orderBy: any =
     sortField === 'price' ? { price: sortDir as 'asc' | 'desc' } :
-    sortField === 'name'  ? { name: sortDir as 'asc' | 'desc' } :
+    sortField === 'name'  ? { name:  sortDir as 'asc' | 'desc' } :
     { createdAt: 'desc' }
 
   const where = {
@@ -47,7 +42,6 @@ async function getProducts(searchParams: Props['searchParams']) {
       { name: { contains: search, mode: 'insensitive' as const } },
       { description: { contains: search, mode: 'insensitive' as const } },
     ]}),
-    price: { gte: minPrice, lte: maxPrice },
   }
 
   const [products, total, categories] = await Promise.all([
@@ -77,136 +71,145 @@ export default async function ProductsPage({ searchParams }: Props) {
   const { products, total, categories, page, pages } = await getProducts(searchParams)
 
   const title =
-    searchParams.sale === 'true'    ? 'Sale Items' :
+    searchParams.sale === 'true'       ? 'Sale' :
     searchParams.tag === 'new-arrival' ? 'New Arrivals' :
-    searchParams.featured === 'true' ? 'Featured Products' :
-    searchParams.search ? `Results for "${searchParams.search}"` :
+    searchParams.featured === 'true'   ? 'Featured' :
+    searchParams.search                ? `"${searchParams.search}"` :
     searchParams.category
       ? (categories.find(c => c.slug === searchParams.category)?.name ?? 'Products')
       : 'All Products'
 
   return (
-    <div className="container-custom py-8 md:py-12">
-      <div className="mb-8">
-        <h1 className="section-heading mb-1">{title}</h1>
-        <p className="text-sm text-muted-foreground">{total} products</p>
+    <div className="bg-[#f5f0eb] min-h-screen">
+      {/* Page Header */}
+      <div className="container-custom pt-10 pb-6 border-b border-[#e0d8cf]">
+        <h1 className="text-3xl font-semibold tracking-widest uppercase text-foreground">
+          {title}
+        </h1>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* ---- SIDEBAR FILTERS ---- */}
-        <aside className="w-full lg:w-56 flex-shrink-0">
-          <div className="sticky top-24 space-y-6">
-            <div>
-              <h3 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-3">Categories</h3>
-              <div className="space-y-1">
-                <Link
-                  href="/products"
-                  className={`block rounded-lg px-3 py-2 text-sm transition-colors ${!searchParams.category ? 'bg-primary text-white font-medium' : 'hover:bg-accent'}`}
-                >
-                  All Categories
-                </Link>
-                {categories.map(cat => (
-                  <Link
-                    key={cat.id}
-                    href={`/products?category=${cat.slug}`}
-                    className={`block rounded-lg px-3 py-2 text-sm transition-colors ${searchParams.category === cat.slug ? 'bg-primary text-white font-medium' : 'hover:bg-accent'}`}
-                  >
-                    {cat.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div className="border-t border-border pt-4">
-              <h3 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-3">Shop</h3>
-              <div className="space-y-1">
-                <Link href="/products?sale=true" className={`block rounded-lg px-3 py-2 text-sm transition-colors ${searchParams.sale === 'true' ? 'bg-red-500 text-white font-medium' : 'hover:bg-accent text-red-600 font-medium'}`}>
-                  🔥 Sale Items
-                </Link>
-                <Link href="/products?tag=new-arrival" className={`block rounded-lg px-3 py-2 text-sm transition-colors ${searchParams.tag === 'new-arrival' ? 'bg-primary text-white font-medium' : 'hover:bg-accent'}`}>
-                  ✨ New Arrivals
-                </Link>
-                <Link href="/products?featured=true" className={`block rounded-lg px-3 py-2 text-sm transition-colors ${searchParams.featured === 'true' ? 'bg-primary text-white font-medium' : 'hover:bg-accent'}`}>
-                  ⭐ Featured
-                </Link>
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        {/* ---- PRODUCT GRID ---- */}
-        <div className="flex-1">
-          {/* Sort bar */}
-          <div className="flex items-center justify-between mb-5 pb-4 border-b border-border">
-            <p className="text-sm text-muted-foreground">{total} results</p>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Sort:</span>
-              <div className="relative">
-                <select
-                  className="appearance-none text-sm border border-input rounded-md pl-3 pr-8 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-                  defaultValue={searchParams.sort ?? 'createdAt_desc'}
-                >
-                  {SORT_OPTIONS.map(o => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              </div>
-            </div>
-          </div>
-
-          {products.length === 0 ? (
-            <div className="py-24 text-center text-muted-foreground">
-              <SlidersHorizontal className="h-12 w-12 mx-auto mb-4 opacity-30" />
-              <p className="text-lg font-medium mb-2">No products found</p>
-              <p className="text-sm">Try adjusting your filters or <Link href="/products" className="text-primary hover:underline">browse all products</Link>.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4 xl:gap-5">
-              {products.map(product => {
-                const avgRating = product.reviews.length
-                  ? product.reviews.reduce((s, r) => s + r.rating, 0) / product.reviews.length
-                  : null
-                return (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    name={product.name}
-                    slug={product.slug}
-                    price={product.price}
-                    compareAt={product.compareAt ?? undefined}
-                    image={product.images[0]?.url ?? '/images/placeholder.jpg'}
-                    category={product.category.name}
-                    isOnSale={product.isOnSale}
-                    isFeatured={product.isFeatured}
-                    avgRating={avgRating}
-                    reviewCount={product.reviews.length}
-                  />
-                )
-              })}
-            </div>
-          )}
-
-          {/* Pagination */}
-          {pages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-10">
-              {page > 1 && (
-                <Link href={`/products?${new URLSearchParams({ ...searchParams, page: String(page - 1) })}`}
-                  className="btn-secondary px-4 py-2 text-sm">← Prev</Link>
-              )}
-              {Array.from({ length: pages }, (_, i) => i + 1).map(p => (
-                <Link key={p}
-                  href={`/products?${new URLSearchParams({ ...searchParams, page: String(p) })}`}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${p === page ? 'bg-primary text-white' : 'border border-input hover:bg-accent'}`}>
-                  {p}
-                </Link>
-              ))}
-              {page < pages && (
-                <Link href={`/products?${new URLSearchParams({ ...searchParams, page: String(page + 1) })}`}
-                  className="btn-secondary px-4 py-2 text-sm">Next →</Link>
-              )}
-            </div>
-          )}
+      {/* Filter/Sort bar — just like Vela */}
+      <div className="container-custom py-4 flex items-center justify-between border-b border-[#e0d8cf]">
+        {/* Category filter pills */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <Link
+            href="/products"
+            className={`text-[10px] tracking-widest uppercase font-medium py-1.5 px-3 border transition-colors ${
+              !searchParams.category && !searchParams.sale && !searchParams.featured
+                ? 'border-foreground bg-foreground text-white'
+                : 'border-[#c8c0b8] text-foreground/60 hover:border-foreground hover:text-foreground'
+            }`}
+          >
+            All
+          </Link>
+          {categories.map(cat => (
+            <Link
+              key={cat.id}
+              href={`/products?category=${cat.slug}`}
+              className={`text-[10px] tracking-widest uppercase font-medium py-1.5 px-3 border transition-colors ${
+                searchParams.category === cat.slug
+                  ? 'border-foreground bg-foreground text-white'
+                  : 'border-[#c8c0b8] text-foreground/60 hover:border-foreground hover:text-foreground'
+              }`}
+            >
+              {cat.name}
+            </Link>
+          ))}
+          <Link
+            href="/products?sale=true"
+            className={`text-[10px] tracking-widest uppercase font-medium py-1.5 px-3 border transition-colors ${
+              searchParams.sale === 'true'
+                ? 'border-primary bg-primary text-white'
+                : 'border-[#c8c0b8] text-primary/80 hover:border-primary hover:text-primary'
+            }`}
+          >
+            Sale
+          </Link>
         </div>
+
+        {/* Sort + count */}
+        <div className="flex items-center gap-4">
+          <span className="text-[10px] tracking-widest uppercase text-foreground/40 hidden md:block">
+            {total} Products
+          </span>
+          <div className="relative">
+            <select
+              className="appearance-none bg-transparent border border-[#c8c0b8] text-[10px] tracking-widest uppercase pl-3 pr-8 py-1.5 focus:outline-none focus:border-foreground"
+              defaultValue={searchParams.sort ?? 'createdAt_desc'}
+            >
+              {SORT_OPTIONS.map(o => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+            <SlidersHorizontal className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-foreground/50 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+
+      {/* Product Grid */}
+      <div className="container-custom py-8">
+        {products.length === 0 ? (
+          <div className="py-32 text-center">
+            <p className="text-sm tracking-widest uppercase text-foreground/40 mb-4">No products found</p>
+            <Link href="/products" className="text-[11px] tracking-widest uppercase underline">
+              Clear Filters
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10">
+            {products.map(product => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                slug={product.slug}
+                price={product.price}
+                compareAt={product.compareAt ?? undefined}
+                image={product.images[0]?.url ?? '/images/placeholder.jpg'}
+                category={product.category.name}
+                isOnSale={product.isOnSale}
+                isFeatured={product.isFeatured}
+                avgRating={null}
+                reviewCount={0}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {pages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-16">
+            {page > 1 && (
+              <Link
+                href={`/products?${new URLSearchParams({ ...searchParams, page: String(page - 1) })}`}
+                className="text-[10px] tracking-widest uppercase border border-[#c8c0b8] px-5 py-2.5 hover:bg-foreground hover:text-white hover:border-foreground transition-colors"
+              >
+                ← Previous
+              </Link>
+            )}
+            {Array.from({ length: pages }, (_, i) => i + 1).map(p => (
+              <Link
+                key={p}
+                href={`/products?${new URLSearchParams({ ...searchParams, page: String(p) })}`}
+                className={`text-[10px] tracking-widest uppercase border px-4 py-2.5 transition-colors ${
+                  p === page
+                    ? 'border-foreground bg-foreground text-white'
+                    : 'border-[#c8c0b8] hover:bg-foreground hover:text-white hover:border-foreground'
+                }`}
+              >
+                {p}
+              </Link>
+            ))}
+            {page < pages && (
+              <Link
+                href={`/products?${new URLSearchParams({ ...searchParams, page: String(page + 1) })}`}
+                className="text-[10px] tracking-widest uppercase border border-[#c8c0b8] px-5 py-2.5 hover:bg-foreground hover:text-white hover:border-foreground transition-colors"
+              >
+                Next →
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

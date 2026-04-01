@@ -4,8 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
+import { useTheme } from 'next-themes'
 import { useCart } from '@/hooks/useCart'
-import { Search, User, ShoppingBag, Heart, Menu, X, ChevronDown } from 'lucide-react'
+import { Search, User, ShoppingBag, Heart, Menu, X, ChevronDown, Sun, Moon } from 'lucide-react'
 
 const NAV_LINKS = [
   { label: 'New', href: '/products?tag=new-arrival' },
@@ -46,6 +47,10 @@ export default function Navbar() {
   const { itemCount, toggleCart } = useCart()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const { setTheme, resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
+
+  const toggleDark = () => setTheme(isDark ? 'light' : 'dark')
 
   return (
     <header className="sticky top-0 z-50 w-full">
@@ -55,7 +60,7 @@ export default function Navbar() {
       </div>
 
       {/* Main Nav */}
-      <div className="bg-[#f5f0eb] border-b border-[#e0d8cf]">
+      <div className="bg-background border-b border-border">
         <div className="container-custom flex items-center h-[60px] gap-8">
 
           {/* Logo */}
@@ -65,7 +70,7 @@ export default function Navbar() {
               alt="Judigoods"
               width={200}
               height={40}
-              className="h-10 w-auto object-contain"
+              className="h-10 w-auto object-contain dark:brightness-90"
               priority
             />
           </Link>
@@ -85,12 +90,12 @@ export default function Navbar() {
                     <ChevronDown className="h-3 w-3 mt-0.5" />
                   </button>
                   {activeDropdown === link.label && (
-                    <div className="absolute top-full left-0 mt-0 w-48 bg-white border border-[#e0d8cf] shadow-sm py-2 z-50">
+                    <div className="absolute top-full left-0 mt-0 w-48 bg-card border border-border shadow-sm py-2 z-50">
                       {link.dropdown.map((sub) => (
                         <Link
                           key={sub.label}
                           href={sub.href}
-                          className="block px-4 py-2.5 text-xs tracking-wider uppercase text-foreground/70 hover:text-foreground hover:bg-[#f5f0eb] transition-colors"
+                          className="block px-4 py-2.5 text-xs tracking-wider uppercase text-foreground/70 hover:text-foreground hover:bg-accent transition-colors"
                         >
                           {sub.label}
                         </Link>
@@ -116,33 +121,33 @@ export default function Navbar() {
               <button className="btn-ghost" aria-label="Account">
                 <User className="h-[18px] w-[18px]" />
               </button>
-              <div className="absolute right-0 top-full mt-0 w-44 bg-white border border-[#e0d8cf] shadow-sm py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <div className="absolute right-0 top-full mt-0 w-44 bg-card border border-border shadow-sm py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 {session ? (
                   <>
-                    <div className="px-4 py-2 border-b border-[#e0d8cf]">
-                      <p className="text-[11px] font-semibold uppercase tracking-wider truncate">{session.user.name}</p>
+                    <div className="px-4 py-2 border-b border-border">
+                      <p className="text-[11px] font-semibold uppercase tracking-wider truncate text-foreground">{session.user.name}</p>
                     </div>
-                    <Link href="/account/orders" className="block px-4 py-2.5 text-[11px] tracking-wider uppercase text-foreground/70 hover:text-foreground hover:bg-[#f5f0eb]">
+                    <Link href="/account/orders" className="block px-4 py-2.5 text-[11px] tracking-wider uppercase text-foreground/70 hover:text-foreground hover:bg-accent">
                       My Orders
                     </Link>
                     {session.user.role === 'ADMIN' && (
-                      <Link href="/admin" className="block px-4 py-2.5 text-[11px] tracking-wider uppercase text-foreground/70 hover:text-foreground hover:bg-[#f5f0eb]">
+                      <Link href="/admin" className="block px-4 py-2.5 text-[11px] tracking-wider uppercase text-foreground/70 hover:text-foreground hover:bg-accent">
                         Admin Panel
                       </Link>
                     )}
                     <button
                       onClick={() => signOut({ callbackUrl: '/' })}
-                      className="block w-full text-left px-4 py-2.5 text-[11px] tracking-wider uppercase text-red-600 hover:bg-[#f5f0eb]"
+                      className="block w-full text-left px-4 py-2.5 text-[11px] tracking-wider uppercase text-red-600 hover:bg-accent"
                     >
                       Sign Out
                     </button>
                   </>
                 ) : (
                   <>
-                    <Link href="/auth/login" className="block px-4 py-2.5 text-[11px] tracking-wider uppercase text-foreground/70 hover:text-foreground hover:bg-[#f5f0eb]">
+                    <Link href="/auth/login" className="block px-4 py-2.5 text-[11px] tracking-wider uppercase text-foreground/70 hover:text-foreground hover:bg-accent">
                       Sign In
                     </Link>
-                    <Link href="/auth/register" className="block px-4 py-2.5 text-[11px] tracking-wider uppercase text-foreground/70 hover:text-foreground hover:bg-[#f5f0eb]">
+                    <Link href="/auth/register" className="block px-4 py-2.5 text-[11px] tracking-wider uppercase text-foreground/70 hover:text-foreground hover:bg-accent">
                       Create Account
                     </Link>
                   </>
@@ -163,6 +168,19 @@ export default function Navbar() {
               )}
             </button>
 
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleDark}
+              className="btn-ghost"
+              aria-label="Toggle dark mode"
+              title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDark
+                ? <Sun className="h-[18px] w-[18px]" />
+                : <Moon className="h-[18px] w-[18px]" />
+              }
+            </button>
+
             {/* Mobile menu */}
             <button
               className="md:hidden btn-ghost"
@@ -176,12 +194,12 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="md:hidden bg-[#f5f0eb] border-t border-[#e0d8cf] px-6 py-4 space-y-1">
+          <div className="md:hidden bg-background border-t border-border px-6 py-4 space-y-1">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="block py-3 text-xs tracking-widest uppercase font-medium text-foreground/70 hover:text-foreground border-b border-[#e0d8cf] last:border-0"
+                className="block py-3 text-xs tracking-widest uppercase font-medium text-foreground/70 hover:text-foreground border-b border-border last:border-0"
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}

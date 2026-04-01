@@ -6,26 +6,48 @@
 
 @layer base {
   :root {
-    --background: 36 20% 96%;       /* cream #f5f0eb */
-    --foreground: 0 0% 10%;         /* near-black */
+    --background: 220 14% 93%;      /* pastel gray #e8eaed */
+    --foreground: 0 0% 10%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
-    --primary: 152 72% 20%;         /* dark forest green like Vela #0b4d2a */
+    --primary: 152 72% 20%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 36 15% 93%;
+    --secondary: 220 12% 89%;
     --secondary-foreground: 0 0% 10%;
-    --muted: 36 12% 90%;
+    --muted: 220 10% 86%;
     --muted-foreground: 0 0% 45%;
-    --accent: 36 15% 90%;
+    --accent: 220 12% 88%;
     --accent-foreground: 0 0% 10%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 36 10% 85%;
-    --input: 36 10% 85%;
+    --border: 220 10% 82%;
+    --input: 220 10% 82%;
     --ring: 152 72% 20%;
-    --radius: 0rem;                 /* Vela uses sharp/no border radius */
+    --radius: 0rem;
+  }
+
+  .dark {
+    --background: 220 15% 12%;      /* dark slate */
+    --foreground: 220 10% 90%;
+    --card: 220 15% 17%;
+    --card-foreground: 220 10% 90%;
+    --popover: 220 15% 17%;
+    --popover-foreground: 220 10% 90%;
+    --primary: 152 60% 35%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 22%;
+    --secondary-foreground: 220 10% 90%;
+    --muted: 220 15% 20%;
+    --muted-foreground: 220 8% 55%;
+    --accent: 220 15% 22%;
+    --accent-foreground: 220 10% 90%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 12% 25%;
+    --input: 220 12% 25%;
+    --ring: 152 60% 35%;
   }
 }
 

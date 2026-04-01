@@ -1,30 +1,15 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import ProductCard from '@/components/ProductCard'
 import { ArrowRight } from 'lucide-react'
 
-async function getFeaturedProducts() {
-  return prisma.product.findMany({
-    where: { isFeatured: true, isPublished: true },
-    take: 8,
-    include: {
-      images: { where: { isPrimary: true }, take: 1 },
-      category: { select: { name: true, slug: true } },
-      reviews: { select: { rating: true } },
-    },
-    orderBy: { createdAt: 'desc' },
-  })
-}
-
-async function getNewProducts() {
+async function getAllProducts() {
   return prisma.product.findMany({
     where: { isPublished: true },
-    take: 4,
+    take: 16,
     include: {
       images: { where: { isPrimary: true }, take: 1 },
       category: { select: { name: true, slug: true } },
-      reviews: { select: { rating: true } },
     },
     orderBy: { createdAt: 'desc' },
   })
@@ -34,180 +19,111 @@ async function getCategories() {
   return prisma.category.findMany({
     where: { parentId: null },
     include: { _count: { select: { products: true } } },
-    take: 5,
+    take: 8,
   })
 }
 
 export default async function HomePage() {
-  const [featuredProducts, newProducts, categories] = await Promise.all([
-    getFeaturedProducts(),
-    getNewProducts(),
+  const [products, categories] = await Promise.all([
+    getAllProducts(),
     getCategories(),
   ])
 
   return (
-    <div className="flex flex-col bg-[#f5f0eb]">
+    <div className="flex flex-col bg-background min-h-screen">
 
-      {/* ======= HERO — full bleed, text bottom-left like Vela ======= */}
-      <section className="relative w-full h-[90vh] min-h-[560px] overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80"
-          alt="Judigoods new collection"
-          fill
-          className="object-cover object-center"
-          priority
-        />
-        {/* subtle dark gradient bottom-left */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-
-        {/* Text bottom-left like Vela */}
-        <div className="absolute bottom-12 left-10 text-white max-w-sm">
-          <p className="text-xs tracking-[0.3em] uppercase mb-3 opacity-80">New Collection 2026</p>
-          <h1 className="text-4xl md:text-5xl font-semibold leading-tight mb-5 uppercase tracking-wide">
-            Wear Your<br />Story
+      {/* ── PAGE HEADER ─────────────────────────────────────────────── */}
+      <section className="border-b border-border bg-card">
+        <div className="container-custom py-10">
+          <p className="text-[10px] tracking-[0.4em] uppercase text-primary mb-2">Welcome to</p>
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-widest uppercase text-foreground mb-3">
+            Judigoods
           </h1>
+          <p className="text-sm text-foreground/60 max-w-md">
+            Ethically sourced goods, curated with intention. Shop our full collection below.
+          </p>
+        </div>
+      </section>
+
+      {/* ── CATEGORY FILTER PILLS ───────────────────────────────────── */}
+      <section className="border-b border-border bg-card sticky top-[60px] z-10">
+        <div className="container-custom py-3 flex items-center gap-2 overflow-x-auto scrollbar-hide">
           <Link
             href="/products"
-            className="inline-block border border-white text-white text-xs tracking-widest uppercase px-7 py-3 hover:bg-white hover:text-black transition-colors"
+            className="flex-shrink-0 text-[10px] tracking-widest uppercase font-semibold px-4 py-2 border border-foreground bg-foreground text-background transition-colors"
           >
-            Shop Now
+            All
           </Link>
-        </div>
-      </section>
-
-      {/* ======= CATEGORY TILES ======= */}
-      <section className="py-14">
-        <div className="container-custom">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/products?category=${cat.slug}`}
-                className="group relative aspect-[3/4] overflow-hidden bg-[#ece8e2]"
-              >
-                {cat.image && (
-                  <Image
-                    src={cat.image}
-                    alt={cat.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                )}
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <p className="text-[11px] font-semibold tracking-widest uppercase">{cat.name}</p>
-                  <p className="text-[10px] opacity-70 mt-0.5">{cat._count.products} items</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ======= NEW IN ======= */}
-      <section className="py-10">
-        <div className="container-custom">
-          <div className="flex items-center justify-between mb-7">
-            <h2 className="section-heading">New In</h2>
-            <Link href="/products?tag=new-arrival" className="text-[11px] tracking-widest uppercase text-foreground/60 hover:text-foreground flex items-center gap-1 transition-colors">
-              View All <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {newProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                slug={product.slug}
-                price={product.price}
-                compareAt={product.compareAt ?? undefined}
-                image={product.images[0]?.url ?? '/images/placeholder.jpg'}
-                category={product.category.name}
-                isOnSale={product.isOnSale}
-                isFeatured={product.isFeatured}
-                avgRating={null}
-                reviewCount={0}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ======= FULL-WIDTH BANNER ======= */}
-      <section className="my-10 relative w-full h-[55vh] min-h-[320px] overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=1400&q=80"
-          alt="Judigoods lifestyle"
-          fill
-          className="object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-black/35 flex items-center justify-center text-white text-center px-6">
-          <div>
-            <p className="text-xs tracking-[0.35em] uppercase mb-3 opacity-80">Ethically Made</p>
-            <h2 className="text-3xl md:text-4xl font-semibold uppercase tracking-wide mb-6 max-w-md mx-auto leading-tight">
-              Made with Care.<br />Worn with Pride.
-            </h2>
+          {categories.map((cat) => (
             <Link
-              href="/products"
-              className="inline-block border border-white text-white text-xs tracking-widest uppercase px-7 py-3 hover:bg-white hover:text-black transition-colors"
+              key={cat.id}
+              href={`/products?category=${cat.slug}`}
+              className="flex-shrink-0 text-[10px] tracking-widest uppercase font-medium px-4 py-2 border border-border text-foreground/70 hover:border-foreground hover:text-foreground transition-colors"
             >
-              Shop the Collection
+              {cat.name}
+              <span className="ml-1.5 text-foreground/40">({cat._count.products})</span>
             </Link>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* ======= FEATURED PRODUCTS ======= */}
-      <section className="py-10">
+      {/* ── MAIN PRODUCT CATALOG GRID ───────────────────────────────── */}
+      <section className="py-12">
         <div className="container-custom">
-          <div className="flex items-center justify-between mb-7">
-            <h2 className="section-heading">Featured</h2>
-            <Link href="/products?featured=true" className="text-[11px] tracking-widest uppercase text-foreground/60 hover:text-foreground flex items-center gap-1 transition-colors">
-              View All <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="section-heading">All Products</h2>
+            <span className="text-[11px] text-foreground/50 tracking-wider uppercase">
+              {products.length} items
+            </span>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {featuredProducts.slice(0, 8).map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                slug={product.slug}
-                price={product.price}
-                compareAt={product.compareAt ?? undefined}
-                image={product.images[0]?.url ?? '/images/placeholder.jpg'}
-                category={product.category.name}
-                isOnSale={product.isOnSale}
-                isFeatured={product.isFeatured}
-                avgRating={null}
-                reviewCount={0}
-              />
-            ))}
-          </div>
+
+          {products.length === 0 ? (
+            <div className="text-center py-24 text-foreground/40">
+              <p className="text-lg tracking-widest uppercase">No products yet</p>
+              <p className="text-sm mt-2">Check back soon.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  slug={product.slug}
+                  price={product.price}
+                  compareAt={product.compareAt ?? undefined}
+                  image={product.images[0]?.url ?? '/images/placeholder.jpg'}
+                  category={product.category.name}
+                  isOnSale={product.isOnSale}
+                  isFeatured={product.isFeatured}
+                  avgRating={null}
+                  reviewCount={0}
+                />
+              ))}
+            </div>
+          )}
+
+          {products.length >= 16 && (
+            <div className="mt-14 text-center">
+              <Link href="/products" className="btn-secondary">
+                View Full Catalog <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* ======= OUR COMMUNITY / VALUES ======= */}
-      <section className="py-16 bg-white mt-10">
-        <div className="container-custom text-center max-w-2xl mx-auto">
-          <p className="text-[11px] tracking-[0.35em] uppercase text-primary mb-4">Our Promise</p>
-          <h2 className="text-2xl font-semibold uppercase tracking-widest mb-5">
-            Curated with Intention
-          </h2>
-          <p className="text-sm text-foreground/60 leading-relaxed mb-8">
-            At Judigoods, we believe community and purpose are more than words. Every piece we carry
-            is chosen because it&apos;s made with care — ethically sourced, beautifully crafted, and
-            worthy of your wardrobe.
-          </p>
-          <div className="grid grid-cols-3 gap-6 mt-8 border-t border-[#e0d8cf] pt-8">
+      {/* ── VALUES STRIP ────────────────────────────────────────────── */}
+      <section className="border-t border-border bg-card py-10 mt-4">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             {[
               { title: 'Ethically Sourced', sub: 'Every product is selected with care' },
               { title: 'Authentic Goods', sub: 'Real products from real makers' },
               { title: 'Community First', sub: 'We give back with every order' },
             ].map(({ title, sub }) => (
               <div key={title}>
-                <p className="text-[11px] font-semibold tracking-widest uppercase mb-1">{title}</p>
+                <p className="text-[11px] font-semibold tracking-widest uppercase mb-1 text-foreground">{title}</p>
                 <p className="text-[11px] text-foreground/50">{sub}</p>
               </div>
             ))}
@@ -215,11 +131,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ======= NEWSLETTER ======= */}
-      <section className="py-16 bg-[#01603a] text-white text-center">
+      {/* ── NEWSLETTER ──────────────────────────────────────────────── */}
+      <section className="py-14 bg-[#01603a] text-white text-center">
         <div className="container-custom max-w-md mx-auto">
           <p className="text-[10px] tracking-[0.4em] uppercase opacity-70 mb-3">Stay Connected</p>
-          <h2 className="text-2xl font-semibold uppercase tracking-widest mb-6">Join the Community</h2>
+          <h2 className="text-2xl font-semibold uppercase tracking-widest mb-5">Join the Community</h2>
           <p className="text-sm opacity-70 mb-7">Get early access to new arrivals, exclusive offers, and styling inspiration.</p>
           <form className="flex gap-0 max-w-sm mx-auto">
             <input
